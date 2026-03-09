@@ -3,17 +3,32 @@ const router = express.Router();
 const db = require("../config/db");
 
 router.get("/", (req, res) => {
+  res.send(`
+    <h2>Test Form</h2>
+    <form method="POST" action="/submit">
+      <input name="name" placeholder="Your name"/>
+      <input name="message" placeholder="Message"/>
+      <button type="submit">Submit</button>
+    </form>
+  `);
+});
 
-  db.query("SELECT 'Connected Successfully' AS message", (err, results) => {
+router.post("/submit", express.urlencoded({ extended: true }), (req, res) => {
 
-    if (err) {
-      res.send("Database query failed");
-      return;
+  const { name, message } = req.body;
+
+  db.query(
+    "INSERT INTO messages (name, message) VALUES (?, ?)",
+    [name, message],
+    (err) => {
+      if (err) {
+        res.send("Database insert failed");
+        return;
+      }
+
+      res.send("Message saved to database");
     }
-
-    res.send(results[0].message);
-
-  });
+  );
 
 });
 
