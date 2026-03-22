@@ -3,6 +3,11 @@ const app = express();
 
 const testRoute = require("./routes/testRoute");
 
+// Middleware 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Routes
 app.use("/", testRoute);
 
 const PORT = 3000;
