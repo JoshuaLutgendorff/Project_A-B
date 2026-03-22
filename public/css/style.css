@@ -1,0 +1,208 @@
+/* --- 1. GLOBAL RESET & VARIABLES --- */
+:root {
+    --forest-green: #2C5F2D;
+    --charcoal: #222222;
+    --off-white: #F9F9F9;
+    --pure-white: #FFFFFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: var(--charcoal);
+    line-height: 1.8;
+    background-color: var(--pure-white);
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+/* --- 2. NAVIGATION --- */
+.navbar {
+    background: var(--pure-white);
+    height: 80px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-container {
+    width: 90%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--forest-green);
+}
+
+.nav-menu { display: flex; gap: 40px; list-style: none; }
+.nav-link { text-decoration: none; color: var(--charcoal); font-weight: 600; transition: 0.3s; }
+.nav-link:hover { color: var(--forest-green); }
+
+/* --- 3. HERO SECTION (With Real Image) --- */
+#hero {
+    height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--pure-white);
+    margin-top: 80px;
+}
+
+.hero-bg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crucial: Makes image fill screen without squishing */
+    z-index: -2;
+    filter: brightness(0.6); /* Darkens image so text is readable */
+}
+
+.hero-content {
+    z-index: 1;
+    max-width: 800px;
+    padding: 20px;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    line-height: 1.1;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.btn {
+    display: inline-block;
+    background: var(--forest-green);
+    color: white;
+    padding: 15px 40px;
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 20px;
+    border-radius: 2px;
+    transition: background 0.3s;
+}
+.btn:hover { background: #1e421f; }
+
+/* --- 4. SHOP GRID (The Images) --- */
+.section-pad { padding: 100px 0; }
+.container { width: 90%; max-width: 1200px; margin: 0 auto; }
+.section-header { text-align: center; margin-bottom: 60px; }
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    align-items: start;
+}
+
+.card {
+    text-align: center;
+    background: var(--pure-white);
+    transition: transform 0.3s;
+}
+.card:hover { transform: translateY(-5px); }
+
+/* THE MAGIC FIX FOR IMAGES */
+.image-wrapper {
+    width: 100%;
+    aspect-ratio: 3 / 4; /* Forces portrait rectangle */
+    overflow: hidden;
+    margin-bottom: 15px;
+    background-color: #f0f0f0;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crops image to fit the rectangle perfectly */
+    transition: transform 0.5s;
+}
+
+.card:hover img { transform: scale(1.05); }
+
+/* --- 5. ABOUT SECTION --- */
+.bg-light { background-color: var(--off-white); }
+
+.split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+}
+
+.about-image-wrapper img {
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.lead {
+    font-size: 1.25rem;
+    color: var(--forest-green);
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* --- 6. FOOTER --- */
+#contact {
+    background-color: var(--charcoal);
+    color: #CCC;
+    padding: 80px 0 20px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 60px;
+}
+
+.footer-item h4 {
+    color: var(--pure-white);
+    border-bottom: 2px solid var(--forest-green);
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+.copyright {
+    text-align: center;
+    border-top: 1px solid #444;
+    padding-top: 20px;
+    font-size: 0.8rem;
+}
+
+/* --- MOBILE --- */
+@media (max-width: 768px) {
+    .hero-content h1 { font-size: 2.2rem; }
+    .nav-menu { display: none; } 
+    .split-layout { grid-template-columns: 1fr; }
+    .about-image-wrapper { order: -1; margin-bottom: 30px; }
+}

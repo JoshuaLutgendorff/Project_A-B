@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require("../config/db");
 
 // Home page with form
-router.get("/", (req, res) => {
+router.get("/test", (req, res) => {
   res.send(`
     <h2>Test Form</h2>
     <form method="POST" action="/submit">
