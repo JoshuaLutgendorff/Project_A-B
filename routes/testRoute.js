@@ -2,7 +2,14 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 
-// Home page with form
+function isAuthenticated(req, res, next) {
+  if (req.session && req.session.loggedIn) {
+    return next();
+  }
+  res.redirect("/login");
+}
+
+// homepage
 router.get("/test", (req, res) => {
   res.send(`
     <h2>Test Form</h2>
@@ -11,9 +18,56 @@ router.get("/test", (req, res) => {
       <input name="message" placeholder="Message" required />
       <button type="submit">Submit</button>
     </form>
-
     <br/>
-    <a href="/messages">View All Messages</a>
+    <a href="/login">Admin Login</a>
+  `);
+});
+
+// login page
+router.get("/login", (req, res) => {
+  res.send(`
+    <h2>Admin Login</h2>
+    <form method="POST" action="/login">
+      <input name="username" placeholder="Username" required />
+      <input name="password" type="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+  `);
+});
+
+// login submit
+router.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  if (
+    username === process.env.ADMIN_USERNAME &&
+    password === process.env.ADMIN_PASSWORD
+  ) {
+    req.session.loggedIn = true;
+    req.session.username = username;
+    return res.redirect("/admin");
+  }
+
+  res.send("Invalid username or password");
+});
+
+// logout
+router.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
+});
+
+// protected admin page
+router.get("/admin", isAuthenticated, (req, res) => {
+  res.send(`
+    <h2>Admin Dashboard</h2>
+    <p>Welcome, ${req.session.username}</p>
+    <ul>
+      <li><a href="/messages">View Messages</a></li>
+      <li><a href="/test">Open Test Form</a></li>
+      <li><a href="/logout">Logout</a></li>
+    </ul>
   `);
 });
 
@@ -29,13 +83,14 @@ router.post("/submit", (req, res) => {
         console.error(err);
         return res.send("Database insert failed");
       }
+
       res.send(`Message saved to database with ID ${result.insertId}`);
     }
   );
 });
 
-// READ ALL
-router.get("/messages", (req, res) => {
+// READ ALL - protected
+router.get("/messages", isAuthenticated, (req, res) => {
   db.query("SELECT * FROM messages", (err, results) => {
     if (err) {
       console.error(err);
@@ -52,14 +107,14 @@ router.get("/messages", (req, res) => {
         </li>
       `;
     });
-    html += "</ul><a href='/'>Back</a>";
+    html += "</ul><a href='/admin'>Back to Admin</a>";
 
     res.send(html);
   });
 });
 
-// READ ONE
-router.get("/messages/:id", (req, res) => {
+// READ ONE - protected
+router.get("/messages/:id", isAuthenticated, (req, res) => {
   const { id } = req.params;
 
   db.query("SELECT * FROM messages WHERE id = ?", [id], (err, results) => {
@@ -76,8 +131,8 @@ router.get("/messages/:id", (req, res) => {
   });
 });
 
-// UPDATE
-router.put("/messages/:id", (req, res) => {
+// UPDATE - protected
+router.put("/messages/:id", isAuthenticated, (req, res) => {
   const { id } = req.params;
   const { name, message } = req.body;
 
@@ -99,8 +154,8 @@ router.put("/messages/:id", (req, res) => {
   );
 });
 
-// DELETE
-router.delete("/messages/:id", (req, res) => {
+// DELETE - protected
+router.delete("/messages/:id", isAuthenticated, (req, res) => {
   const { id } = req.params;
 
   db.query("DELETE FROM messages WHERE id = ?", [id], (err, result) => {

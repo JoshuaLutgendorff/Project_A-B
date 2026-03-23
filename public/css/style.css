@@ -206,3 +206,31 @@ img {
     .split-layout { grid-template-columns: 1fr; }
     .about-image-wrapper { order: -1; margin-bottom: 30px; }
 }
+
+/* --- 7. CONTACT FORM --- */
+#messageForm {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#messageForm input {
+  padding: 14px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#messageForm button {
+  border: none;
+  cursor: pointer;
+}
+
+#formResponse {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: 600;
+  color: var(--forest-green);
+}
