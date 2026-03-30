@@ -57,3 +57,11 @@ SESSION_SECRET=your_session_secret
 ADMIN_USERNAME=your_admin_username
 ADMIN_PASSWORD=your_admin_password
 PORT=3000
+
+## How to start project 
+Type node server.js in the terminal 
+
+Admin paged is accessed by http://localhost:3000/login
+
+
+
