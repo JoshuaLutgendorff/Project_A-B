@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
 
+// AUTH MIDDLEWARE
 function isAuthenticated(req, res, next) {
   if (req.session && req.session.loggedIn) {
     return next();
@@ -9,7 +10,7 @@ function isAuthenticated(req, res, next) {
   res.redirect("/login");
 }
 
-// homepage
+// TEST FORM
 router.get("/test", (req, res) => {
   res.send(`
     <h2>Test Form</h2>
@@ -23,7 +24,7 @@ router.get("/test", (req, res) => {
   `);
 });
 
-// login page
+// LOGIN PAGE
 router.get("/login", (req, res) => {
   res.send(`
     <h2>Admin Login</h2>
@@ -35,7 +36,7 @@ router.get("/login", (req, res) => {
   `);
 });
 
-// login submit
+// LOGIN SUBMIT
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -51,14 +52,14 @@ router.post("/login", (req, res) => {
   res.send("Invalid username or password");
 });
 
-// logout
+// LOGOUT
 router.get("/logout", (req, res) => {
   req.session.destroy(() => {
     res.redirect("/login");
   });
 });
 
-// protected admin page
+// ADMIN DASHBOARD
 router.get("/admin", isAuthenticated, (req, res) => {
   res.send(`
     <h2>Admin Dashboard</h2>
@@ -71,7 +72,7 @@ router.get("/admin", isAuthenticated, (req, res) => {
   `);
 });
 
-// CREATE
+// CREATE MESSAGE
 router.post("/submit", (req, res) => {
   const { name, message } = req.body;
 
@@ -89,7 +90,7 @@ router.post("/submit", (req, res) => {
   );
 });
 
-// READ ALL - protected
+// READ ALL + DELETE BUTTONS
 router.get("/messages", isAuthenticated, (req, res) => {
   db.query("SELECT * FROM messages", (err, results) => {
     if (err) {
@@ -97,23 +98,52 @@ router.get("/messages", isAuthenticated, (req, res) => {
       return res.send("Failed to fetch messages");
     }
 
-    let html = "<h2>All Messages</h2><ul>";
+    let html = `
+      <h2>All Messages</h2>
+      <ul style="list-style: none; padding: 0;">
+    `;
+
     results.forEach((msg) => {
       html += `
-        <li>
-          <strong>ID:</strong> ${msg.id} |
-          <strong>Name:</strong> ${msg.name} |
-          <strong>Message:</strong> ${msg.message}
+        <li style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc;">
+          <strong>ID:</strong> ${msg.id}<br>
+          <strong>Name:</strong> ${msg.name}<br>
+          <strong>Message:</strong> ${msg.message}<br><br>
+
+          <form method="POST" action="/messages/${msg.id}/delete" style="display:inline;">
+            <button type="submit" onclick="return confirm('Delete this message?')">
+              Delete
+            </button>
+          </form>
         </li>
       `;
     });
-    html += "</ul><a href='/admin'>Back to Admin</a>";
+
+    html += `</ul><a href='/admin'>Back to Admin</a>`;
 
     res.send(html);
   });
 });
 
-// READ ONE - protected
+// DELETE (FORM VERSION FOR BUTTON)
+router.post("/messages/:id/delete", isAuthenticated, (req, res) => {
+  const { id } = req.params;
+
+  db.query("DELETE FROM messages WHERE id = ?", [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.send("Failed to delete message");
+    }
+
+    if (result.affectedRows === 0) {
+      return res.send("Message not found");
+    }
+
+    res.redirect("/messages");
+  });
+});
+
+// READ ONE
 router.get("/messages/:id", isAuthenticated, (req, res) => {
   const { id } = req.params;
 
@@ -131,7 +161,7 @@ router.get("/messages/:id", isAuthenticated, (req, res) => {
   });
 });
 
-// UPDATE - protected
+// UPDATE
 router.put("/messages/:id", isAuthenticated, (req, res) => {
   const { id } = req.params;
   const { name, message } = req.body;
@@ -154,7 +184,7 @@ router.put("/messages/:id", isAuthenticated, (req, res) => {
   );
 });
 
-// DELETE - protected
+// DELETE (API VERSION - KEEP FOR CRUD REQUIREMENT)
 router.delete("/messages/:id", isAuthenticated, (req, res) => {
   const { id } = req.params;
 
